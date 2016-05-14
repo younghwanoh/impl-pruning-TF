@@ -51,23 +51,22 @@ def apply_prune(weights):
 
         print(wl + " threshold:\t" + str(papl.config.th[wl]))
 
-        # Get target layer objects
+        # Get target layer's weights
         weight_obj = weights[wl]
-
-        # Get their actual values
         weight_arr = weight_obj.eval()
 
-        # Apply pruning with target layer
+        # Apply pruning
         weight_arr, w_nzidx, w_nnz = papl.prune_dense(weight_arr, name=wl,
                                             thresh=papl.config.th[wl])
 
-        # Store pruned layers as tensorflow objects
+        # Store pruned weights as tensorflow objects
         dict_nzidx[wl] = w_nzidx
         sess.run(weight_obj.assign(weight_arr))
 
     return dict_nzidx
 
 def apply_prune_on_grads(grads_and_vars, dict_nzidx):
+    # Mask gradients with pruned elements
     for key, nzidx in dict_nzidx.items():
         count = 0
         for grad, var in grads_and_vars:
@@ -82,9 +81,12 @@ def gen_sparse_dict(dense_w):
     for target in papl.config.target_all_layer:
         target_arr = dense_w[target].eval()
         sparse_arr = papl.prune_tf_sparse(target_arr)
-        sparse_w[target+"_idx"] = tf.Variable(tf.constant(sparse_arr[0], dtype=tf.int32), name=target+"_idx")
-        sparse_w[target] = tf.Variable(tf.constant(sparse_arr[1], dtype=tf.float32), name=target)
-        sparse_w[target+"_shape"] = tf.Variable(tf.constant(sparse_arr[2], dtype=tf.int32), name=target+"_shape")
+        sparse_w[target+"_idx"] = tf.Variable(tf.constant(sparse_arr[0], dtype=tf.int32),
+                name=target+"_idx")
+        sparse_w[target] = tf.Variable(tf.constant(sparse_arr[1], dtype=tf.float32),
+                name=target)
+        sparse_w[target+"_shape"] = tf.Variable(tf.constant(sparse_arr[2], dtype=tf.int32),
+                name=target+"_shape")
     return sparse_w
 
 dense_w={
@@ -152,10 +154,10 @@ if args.first_round == True:
 
     score = test(y_conv, message="First-round test accuracy")
     
-    # save model objects to readable format
+    # Save model objects to readable format
     papl.print_weight_vars(dense_w, papl.config.target_all_layer,
                            papl.config.target_dat, show_zero=papl.config.show_zero)
-    # save model objects to serialized format
+    # Save model objects to serialized format
     saver.save(sess, "./model_ckpt_dense")
 
 if args.second_round == True:
@@ -207,10 +209,10 @@ if args.second_round == True:
         if tf.is_variable_initialized(var).eval() == False:
             sess.run(tf.initialize_variables([var]))
 
-    # save model objects to readable format
+    # Save model objects to readable format
     papl.print_weight_vars(dense_w, papl.config.target_all_layer,
                            papl.config.target_tp_dat, show_zero=papl.config.show_zero)
-    # save model objects to serialized format
+    # Save model objects to serialized format
     final_saver = tf.train.Saver(sparse_w)
     final_saver.save(sess, "./model_ckpt_sparse_retrained") 
 
