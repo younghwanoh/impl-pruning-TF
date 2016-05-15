@@ -23,23 +23,12 @@ sess = tf.InteractiveSession()
 # sess = tf.Session()
 
 def imgread(path):
-    tmp = imread(path)
-    tmp = imresize(tmp, (28,28))
+    tmp = imresize(imread(path), (28,28))
     img = np.zeros((28,28,1))
     img[:,:,0]=tmp[:,:,0]
     return img
 
-y_ = tf.placeholder("float", shape=[None, 10])
-keep_prob = tf.placeholder("float")
-
-if args.test == True:
-    x = tf.placeholder("float", shape=[None, 784])
-    x_image = tf.reshape(x, [-1,28,28,1])
-elif args.deploy == True:
-    img = imgread("./seven.png")
-    x = tf.placeholder("float", shape=[None, 28, 28, 1])
-    x_image = x
-
+# Declare weight variables
 dense_w={
     "w_conv1": tf.Variable(tf.truncated_normal([5, 5, 1, 32], stddev=0.1), name="w_conv1"),
     "b_conv1": tf.Variable(tf.constant(0.1, shape=[32]), name="b_conv1"),
@@ -69,9 +58,21 @@ def dense_cnn_model(weights):
     y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, weights["w_fc2"]) + weights["b_fc2"])
     return y_conv
 
+# Construct a dense model with variables
+if args.test == True:
+    x = tf.placeholder("float", shape=[None, 784])
+    x_image = tf.reshape(x, [-1,28,28,1])
+elif args.deploy == True:
+    img = imgread("./seven.png")
+    x = tf.placeholder("float", shape=[None, 28, 28, 1])
+    x_image = x
+
+y_ = tf.placeholder("float", shape=[None, 10])
+keep_prob = tf.placeholder("float")
+
 y_conv = dense_cnn_model(dense_w)
 
-# Restore variables
+# Restore values of variables
 saver = tf.train.Saver(dense_w)
 saver.restore(sess, args.model)
 

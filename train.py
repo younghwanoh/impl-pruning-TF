@@ -130,6 +130,7 @@ def test(y_infer, message="None."):
     print(message+" %g\n" % result)
     return result
 
+# Construct a dense model
 x = tf.placeholder("float", shape=[None, 784])
 y_ = tf.placeholder("float", shape=[None, 10])
 keep_prob = tf.placeholder("float")
@@ -139,6 +140,7 @@ y_conv = dense_cnn_model(dense_w)
 saver = tf.train.Saver()
 
 if args.first_round == True:
+    # First round: Train original model
     cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
@@ -162,7 +164,7 @@ if args.first_round == True:
     saver.save(sess, "./model_ckpt_dense")
 
 if args.second_round == True:
-    # Second round
+    # Second round: Retrain pruned model
     saver.restore(sess, "./model_ckpt_dense")
 
     # Apply pruning on this context
@@ -194,7 +196,7 @@ if args.second_round == True:
             sess.run(tf.initialize_variables([var]))
 
     # Train additionally
-    for i in range(0):
+    for i in range(6600):
         batch = mnist.train.next_batch(50)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={
