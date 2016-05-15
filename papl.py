@@ -107,7 +107,7 @@ def prune_dense(weight_arr, name="None", thresh=0.005, **kwargs):
     under_threshold = abs(weight_arr) < thresh
     weight_arr[under_threshold] = 0
     count = np.sum(under_threshold)
-    print "Zeroing count (%s): %s" % (name, weight_arr.size - count)
+    print "Non-zero count (%s): %s" % (name, weight_arr.size - count)
     return weight_arr, -under_threshold, count
 
 # Input: anonymous dimension array and its pruning threshold,
@@ -124,7 +124,7 @@ def prune_tf_sparse(weight_arr, name="None", thresh=0.005):
     shape = list(weight_arr.shape)
 
     count = np.sum(under_threshold)
-    print "Zeroing count (%s): %s" % (name, weight_arr.size - count)
+    print "Non-zero count (%s): %s" % (name, weight_arr.size - count)
     return [indices, values, shape]
 
 # Input: file name and text, Output: log file
