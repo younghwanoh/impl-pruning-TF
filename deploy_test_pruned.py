@@ -92,7 +92,6 @@ elif args.deploy == True:
     img = imgread("./seven.png")
     x = tf.placeholder("float", shape=[None, 28, 28, 1])
     x_image = x
-
 y_ = tf.placeholder("float", shape=[None, 10])
 keep_prob = tf.placeholder("float")
 
