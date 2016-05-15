@@ -29,18 +29,15 @@ def imgread(path):
     img[:,:,0]=tmp[:,:,0]
     return img
 
-if args.test == True:
-    x = tf.placeholder("float", shape=[None, 784])
-elif args.deploy == True:
-    img = imgread("./seven.png")
-    x = tf.placeholder("float", shape=[None, 28, 28, 1])
-
 y_ = tf.placeholder("float", shape=[None, 10])
 keep_prob = tf.placeholder("float")
 
 if args.test == True:
+    x = tf.placeholder("float", shape=[None, 784])
     x_image = tf.reshape(x, [-1,28,28,1])
 elif args.deploy == True:
+    img = imgread("./seven.png")
+    x = tf.placeholder("float", shape=[None, 28, 28, 1])
     x_image = x
 
 dense_w={
@@ -62,7 +59,6 @@ def dense_cnn_model(weights):
         return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                               strides=[1, 2, 2, 1], padding='SAME')
 
-    x_image = tf.reshape(x, [-1,28,28,1])
     h_conv1 = tf.nn.relu(conv2d(x_image, weights["w_conv1"]) + weights["b_conv1"])
     h_pool1 = max_pool_2x2(h_conv1)
     h_conv2 = tf.nn.relu(conv2d(h_pool1, weights["w_conv2"]) + weights["b_conv2"])

@@ -14,16 +14,16 @@ def _add_prefix(a):
         # tmp.append("b_" + val)
     return tmp
 
-# Pruning threshold setting (70 % off)
+# Pruning threshold setting (90 % off)
 th = {
-    "w_conv1":  0.110689 ,
-    "b_conv1":  0.0830755 ,
-    "w_conv2":  0.0988535 ,
-    "b_conv2":  0.088152 ,
-    "w_fc1":  0.0979934 ,
-    "b_fc1":  0.0991785 ,
-    "w_fc2":  0.105566 ,
-    "b_fc2":  0.100518
+    "w_conv1":  0.162963 ,
+    "b_conv1":  0.0956728 ,
+    "w_conv2":  0.150202 ,
+    "b_conv2":  0.0928398 ,
+    "w_fc1":  0.148615 ,
+    "b_fc1":  0.102556 ,
+    "w_fc2":  0.15566 ,
+    "b_fc2":  0.112008
 }
 
 # CNN settings for pruned training

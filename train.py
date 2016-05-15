@@ -81,6 +81,7 @@ def gen_sparse_dict(dense_w):
     for target in papl.config.target_all_layer:
         target_arr = np.transpose(dense_w[target].eval())
         sparse_arr = papl.prune_tf_sparse(target_arr)
+        print("HERERERER: ",target)
         sparse_w[target+"_idx"] = tf.Variable(tf.constant(sparse_arr[0], dtype=tf.int32),
                 name=target+"_idx")
         sparse_w[target] = tf.Variable(tf.constant(sparse_arr[1], dtype=tf.float32),

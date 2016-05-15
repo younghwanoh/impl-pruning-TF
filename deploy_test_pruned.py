@@ -29,18 +29,15 @@ def imgread(path):
     img[:,:,0]=tmp[:,:,0]
     return img
 
-if args.test == True:
-    x = tf.placeholder("float", shape=[None, 784])
-elif args.deploy == True:
-    img = imgread("./seven.png")
-    x = tf.placeholder("float", shape=[None, 28, 28, 1])
-
 y_ = tf.placeholder("float", shape=[None, 10])
 keep_prob = tf.placeholder("float")
 
 if args.test == True:
+    x = tf.placeholder("float", shape=[None, 784])
     x_image = tf.reshape(x, [-1,28,28,1])
 elif args.deploy == True:
+    img = imgread("./seven.png")
+    x = tf.placeholder("float", shape=[None, 28, 28, 1])
     x_image = x
 
 # Declare weights variable
@@ -49,12 +46,12 @@ sparse_w={
     "b_conv1": tf.Variable(tf.constant(0.1, shape=[32]), name="b_conv1"),
     "w_conv2": tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1), name="w_conv2"),
     "b_conv2": tf.Variable(tf.constant(0.1, shape=[64]), name="b_conv2"),
-    "w_fc1":      tf.Variable(tf.zeros([963379],  dtype=tf.float32),name="w_fc1"),
-    "w_fc1_idx":  tf.Variable(tf.zeros([963379,2],dtype=tf.int32),  name="w_fc1_idx"),
+    "w_fc1":      tf.Variable(tf.zeros([321130],  dtype=tf.float32),name="w_fc1"),
+    "w_fc1_idx":  tf.Variable(tf.zeros([321130,2],dtype=tf.int32),  name="w_fc1_idx"),
     "w_fc1_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc1_shape"),
     "b_fc1":      tf.Variable(tf.zeros([1024], dtype=tf.float32), name="b_fc1"),
-    "w_fc2":      tf.Variable(tf.zeros([3071],  dtype=tf.float32),name="w_fc2"),
-    "w_fc2_idx":  tf.Variable(tf.zeros([3071,2],dtype=tf.int32),  name="w_fc2_idx"),
+    "w_fc2":      tf.Variable(tf.zeros([1024],  dtype=tf.float32),name="w_fc2"),
+    "w_fc2_idx":  tf.Variable(tf.zeros([1024,2],dtype=tf.int32),  name="w_fc2_idx"),
     "w_fc2_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc2_shape"),
     "b_fc2":      tf.Variable(tf.zeros([10], dtype=tf.float32), name="b_fc2"),
 }
@@ -67,7 +64,6 @@ def sparse_cnn_model(weights):
         return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
                               strides=[1, 2, 2, 1], padding='SAME')
 
-    x_image = tf.reshape(x, [-1,28,28,1])
     h_conv1 = tf.nn.relu(conv2d(x_image, weights["w_conv1"]) + weights["b_conv1"])
     h_pool1 = max_pool_2x2(h_conv1)
     h_conv2 = tf.nn.relu(conv2d(h_pool1, weights["w_conv2"]) + weights["b_conv2"])
@@ -76,7 +72,7 @@ def sparse_cnn_model(weights):
     h_fc1 = tf.nn.relu(tf.nn.embedding_lookup_sparse(h_pool2_flat, weights["w_fc1_ids"], weights["w_fc1"], combiner="sum") + weights["b_fc1"])
     h_fc1_drop = tf.squeeze(tf.nn.dropout(h_fc1, keep_prob))
     y_conv = tf.nn.relu(tf.nn.embedding_lookup_sparse(h_fc1_drop, weights["w_fc2_ids"], weights["w_fc2"], combiner="sum") + weights["b_fc2"])
-    y_conv = tf.nn.softmax(tf.reshape(y_conv, [1,-1]))
+    y_conv = tf.nn.softmax(tf.reshape(y_conv, [1, -1]))
 
     return y_conv
 
@@ -112,6 +108,9 @@ if args.test == True:
     print("test accuracy %g" % result)
     print "time: %s s" % (a-b)
 elif args.deploy == True:
+    
+    # print sess.run(a, feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0}).shape
+    # print sess.run(b, feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0}).shape
     # Infer a single image
     import time
     b = time.time()
