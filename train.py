@@ -79,7 +79,7 @@ def apply_prune_on_grads(grads_and_vars, dict_nzidx):
 def gen_sparse_dict(dense_w):
     sparse_w = dense_w
     for target in papl.config.target_all_layer:
-        target_arr = dense_w[target].eval()
+        target_arr = np.transpose(dense_w[target].eval())
         sparse_arr = papl.prune_tf_sparse(target_arr)
         sparse_w[target+"_idx"] = tf.Variable(tf.constant(sparse_arr[0], dtype=tf.int32),
                 name=target+"_idx")
@@ -193,7 +193,7 @@ if args.second_round == True:
             sess.run(tf.initialize_variables([var]))
 
     # Train additionally
-    for i in range(2000):
+    for i in range(0):
         batch = mnist.train.next_batch(50)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={

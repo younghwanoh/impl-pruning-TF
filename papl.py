@@ -5,7 +5,7 @@ from matplotlib.ticker import FuncFormatter
 from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 import sys
-sys.dont_write_bytecode = True;
+sys.dont_write_bytecode = True
 
 import config
 

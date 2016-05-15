@@ -56,7 +56,7 @@ sparse_w={
     "w_fc2":      tf.Variable(tf.zeros([3071],  dtype=tf.float32),name="w_fc2"),
     "w_fc2_idx":  tf.Variable(tf.zeros([3071,2],dtype=tf.int32),  name="w_fc2_idx"),
     "w_fc2_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc2_shape"),
-    "b_fc2":      tf.Variable(tf.zeros([10], dtype=tf.float32), name="b_fc2")
+    "b_fc2":      tf.Variable(tf.zeros([10], dtype=tf.float32), name="b_fc2"),
 }
 
 # Construct a model with variables
@@ -72,10 +72,11 @@ def sparse_cnn_model(weights):
     h_pool1 = max_pool_2x2(h_conv1)
     h_conv2 = tf.nn.relu(conv2d(h_pool1, weights["w_conv2"]) + weights["b_conv2"])
     h_pool2 = max_pool_2x2(h_conv2)
-    h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
-    h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, tf.sparse_tensor_to_dense(weights["w_fc1"])) + weights["b_fc1"])
-    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
-    y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, tf.sparse_tensor_to_dense(weights["w_fc2"])) + weights["b_fc2"])
+    h_pool2_flat = tf.squeeze(tf.reshape(h_pool2, [-1, 7*7*64]))
+    h_fc1 = tf.nn.relu(tf.nn.embedding_lookup_sparse(h_pool2_flat, weights["w_fc1_ids"], weights["w_fc1"], combiner="sum") + weights["b_fc1"])
+    h_fc1_drop = tf.squeeze(tf.nn.dropout(h_fc1, keep_prob))
+    y_conv = tf.nn.relu(tf.nn.embedding_lookup_sparse(h_fc1_drop, weights["w_fc2_ids"], weights["w_fc2"], combiner="sum") + weights["b_fc2"])
+    y_conv = tf.nn.softmax(tf.reshape(y_conv, [1,-1]))
 
     return y_conv
 
@@ -90,17 +91,31 @@ sparse_w["w_fc1"] = tf.SparseTensor(sparse_w["w_fc1_idx"].eval(),
 sparse_w["w_fc2"] = tf.SparseTensor(sparse_w["w_fc2_idx"].eval(),
                                     sparse_w["w_fc2"].eval(),
                                     sparse_w["w_fc2_shape"].eval())
+sparse_w["w_fc1_ids"] = tf.SparseTensor(sparse_w["w_fc1_idx"].eval(),
+                                    sparse_w["w_fc1_idx"].eval()[:,1],
+                                    sparse_w["w_fc1_shape"].eval())
+sparse_w["w_fc2_ids"] = tf.SparseTensor(sparse_w["w_fc2_idx"].eval(),
+                                    sparse_w["w_fc2_idx"].eval()[:,1],
+                                    sparse_w["w_fc2_shape"].eval())
 
 y_conv = sparse_cnn_model(sparse_w)
 
 # Calc results
 if args.test == True:
-    # Calc tests
+    # Evaluate test sets
+    import time
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    b = time.time()
     result = sess.run(accuracy, feed_dict={x:mnist.test.images, y_:mnist.test.labels, keep_prob: 1.0})
+    a = time.time()
     print("test accuracy %g" % result)
+    print "time: %s s" % (a-b)
 elif args.deploy == True:
-    # Calc results
+    # Infer a single image
+    import time
+    b = time.time()
     result = sess.run(tf.argmax(y_conv,1), feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0})
+    a = time.time()
     print "output: %s" % result
+    print "time: %s s" % (a-b)

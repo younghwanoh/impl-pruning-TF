@@ -79,13 +79,22 @@ y_conv = dense_cnn_model(dense_w)
 saver = tf.train.Saver(dense_w)
 saver.restore(sess, args.model)
 
+# Calc results
 if args.test == True:
-    # Calc tests
+    # Evaluate test sets
+    import time
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    b = time.time()
     result = sess.run(accuracy, feed_dict={x:mnist.test.images, y_:mnist.test.labels, keep_prob: 1.0})
+    a = time.time()
     print("test accuracy %g" % result)
+    print "time: %s s" % (a-b)
 elif args.deploy == True:
-    # Calc results
+    # Infer a single image
+    import time
+    b = time.time()
     result = sess.run(tf.argmax(y_conv,1), feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0})
+    a = time.time()
     print "output: %s" % result
+    print "time: %s s" % (a-b)
