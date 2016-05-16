@@ -4,19 +4,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import readline
-import rlcompleter
-if 'libedit' in readline.__doc__:
-    readline.parse_and_bind("bind ^I rl_complete")
-else:
-    readline.parse_and_bind("tab: complete")
+import sys
+sys.dont_write_bytecode = True
 
 import tensorflow as tf
 import numpy as np
 import argparse
-import sys
 import papl
-sys.dont_write_bytecode = True
 
 import scipy.sparse as sp
 
@@ -187,6 +181,7 @@ if args.second_round == True:
 
     # Test prune-only networks
     score = test(y_conv, message="Second-round prune-only test accuracy")
+    papl.log("prune_accuracy.log", score)
 
     # save model objects to serialized format
     saver.save(sess, "./model_ckpt_dense_pruned", write_meta_graph=False) 
@@ -216,11 +211,13 @@ if args.second_round == True:
         train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     # Save retrained variables to a desne form
-    key = check_file_exists("model_ckpt_dense_retrained")
-    saver.save(sess, key, write_meta_graph=False)
+    # key = check_file_exists("model_ckpt_dense_retrained")
+    # saver.save(sess, key, write_meta_graph=False)
+    saver.save(sess, "model_ckpt_dense_retrained", write_meta_graph=False)
 
     # Test the retrained model
     score = test(y_conv, message="Second-round final test accuracy")
+    papl.log("final_accuracy.log", score)
 
 if args.third_round == True:
     # Third round: Transform iteratively pruned model to a sparse format and save it

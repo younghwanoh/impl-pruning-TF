@@ -32,15 +32,13 @@ def _to_percent(y, position):
 # Calc min, max position of each histogram bin
 def _minRuler(array):
     minimum = min(array)
-    if config.debug == True:
-        print " - min: ", minimum
+    print " - min: ", minimum
     offset = minimum % config.step
     return minimum - offset
 
 def _maxRuler(array):
     maximum = max(array)
-    if config.debug == True:
-        print " - max: ", maximum
+    print " - max: ", maximum
     offset = maximum % config.step
     return maximum - offset + config.step
 
@@ -55,8 +53,7 @@ def draw_histogram():
 
     assert type(file_list) == list
     for target in file_list:
-        if config.debug == True:
-            print "Target: ", target
+        print "Target: ", target
         try:
             with open(config.pdf_prefix+"%s" % target) as text:
                 x = np.float32(text.read().rstrip("\n").split("\n"))

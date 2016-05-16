@@ -1,12 +1,14 @@
 #!/usr/bin/python
 
+import sys
+sys.dont_write_bytecode = True
+
 import tensorflow as tf
 import numpy as np
 from scipy.misc import imread, imresize
-import sys
 import argparse
 import config
-sys.dont_write_bytecode = True
+import papl
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-t", "--test", action="store_true", help="Run test")
@@ -119,3 +121,4 @@ elif args.deploy == True:
     a = time.time()
     print "output: %s" % result
     print "time: %s s" % (a-b)
+    papl.log("performance.log", a-b)
