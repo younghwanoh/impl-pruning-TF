@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import thspace as ths
 
 def _complex_concat(a, b):
     tmp = []
@@ -15,20 +16,12 @@ def _add_prefix(a):
     return tmp
 
 # Pruning threshold setting (90 % off)
-th = {
-    "w_conv1":  0.162963 ,
-    "b_conv1":  0.0956728 ,
-    "w_conv2":  0.150202 ,
-    "b_conv2":  0.0928398 ,
-    "w_fc1":  0.148615 ,
-    "b_fc1":  0.102556 ,
-    "w_fc2":  0.15566 ,
-    "b_fc2":  0.112008
-}
+th = ths.th99
 
 # CNN settings for pruned training
 debug = True
 target_layer = ["fc1", "fc2"]
+retrain_iterations = 0
 
 # Output data lists
 target_all_layer = _add_prefix(target_layer)

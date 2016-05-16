@@ -5,6 +5,8 @@ import numpy as np
 from scipy.misc import imread, imresize
 import sys
 import argparse
+import config
+sys.dont_write_bytecode = True
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-t", "--test", action="store_true", help="Run test")
@@ -37,12 +39,12 @@ sparse_w={
     "b_conv1": tf.Variable(tf.constant(0.1, shape=[32]), name="b_conv1"),
     "w_conv2": tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1), name="w_conv2"),
     "b_conv2": tf.Variable(tf.constant(0.1, shape=[64]), name="b_conv2"),
-    "w_fc1":      tf.Variable(tf.zeros([321130],  dtype=tf.float32),name="w_fc1"),
-    "w_fc1_idx":  tf.Variable(tf.zeros([321130,2],dtype=tf.int32),  name="w_fc1_idx"),
+    "w_fc1":      tf.Variable(tf.zeros([config.th["fc1"]],  dtype=tf.float32),name="w_fc1"),
+    "w_fc1_idx":  tf.Variable(tf.zeros([config.th["fc1"],2],dtype=tf.int32),  name="w_fc1_idx"),
     "w_fc1_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc1_shape"),
     "b_fc1":      tf.Variable(tf.zeros([1024], dtype=tf.float32), name="b_fc1"),
-    "w_fc2":      tf.Variable(tf.zeros([1024],  dtype=tf.float32),name="w_fc2"),
-    "w_fc2_idx":  tf.Variable(tf.zeros([1024,2],dtype=tf.int32),  name="w_fc2_idx"),
+    "w_fc2":      tf.Variable(tf.zeros([config.th["fc2"]],  dtype=tf.float32),name="w_fc2"),
+    "w_fc2_idx":  tf.Variable(tf.zeros([config.th["fc2"],2],dtype=tf.int32),  name="w_fc2_idx"),
     "w_fc2_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc2_shape"),
     "b_fc2":      tf.Variable(tf.zeros([10], dtype=tf.float32), name="b_fc2"),
 }

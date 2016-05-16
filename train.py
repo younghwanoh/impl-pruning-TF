@@ -16,6 +16,7 @@ import numpy as np
 import argparse
 import sys
 import papl
+sys.dont_write_bytecode = True
 
 import scipy.sparse as sp
 
@@ -26,8 +27,8 @@ argparser.add_argument("-2", "--second_round", action="store_true",
     help="Run 2nd-round: apply pruning and its additional training")
 argparser.add_argument("-3", "--third_round", action="store_true",
     help="Run 3rd-round: transform model to a sparse format and save it")
-argparser.add_argument("-c", "--checkpoint", default="./model_ckpt_dense",
-    help="Target checkpoint file for 2nd and 3rd round")
+argparser.add_argument("-m", "--checkpoint", default="./model_ckpt_dense",
+    help="Target checkpoint model file for 2nd and 3rd round")
 args = argparser.parse_args()
 
 from tensorflow.examples.tutorials.mnist import input_data
@@ -82,7 +83,7 @@ def gen_sparse_dict(dense_w):
     sparse_w = dense_w
     for target in papl.config.target_all_layer:
         target_arr = np.transpose(dense_w[target].eval())
-        sparse_arr = papl.prune_tf_sparse(target_arr)
+        sparse_arr = papl.prune_tf_sparse(target_arr, name=target)
         sparse_w[target+"_idx"]=tf.Variable(tf.constant(sparse_arr[0],dtype=tf.int32),
             name=target+"_idx")
         sparse_w[target]=tf.Variable(tf.constant(sparse_arr[1],dtype=tf.float32),
@@ -138,7 +139,7 @@ def check_file_exists(key):
     for elem in fileList:
         if elem.find(key) >= 0:
             count += 1
-    return key+"-"+str(count)
+    return key + ("-"+str(count) if count>0 else "")
 
 # Construct a dense model
 x = tf.placeholder("float", shape=[None, 784])
@@ -205,8 +206,8 @@ if args.second_round == True:
         if tf.is_variable_initialized(var).eval() == False:
             sess.run(tf.initialize_variables([var]))
 
-    # Train 4 epochs additionally
-    for i in range(4400):
+    # Train x epochs additionally
+    for i in range(papl.config.retrain_iterations):
         batch = mnist.train.next_batch(50)
         if i%100 == 0:
             train_accuracy = accuracy.eval(feed_dict={

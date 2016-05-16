@@ -124,7 +124,7 @@ def prune_tf_sparse(weight_arr, name="None", thresh=0.005):
     shape = list(weight_arr.shape)
 
     count = np.sum(under_threshold)
-    print "Non-zero count (%s): %s" % (name, weight_arr.size - count)
+    print "Non-zero count (Sparse %s): %s" % (name, weight_arr.size - count)
     return [indices, values, shape]
 
 # Input: file name and text, Output: log file
