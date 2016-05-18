@@ -11,16 +11,20 @@ After pruning off some percentages of weights, I've simply retrained two epochs 
 each case and got compressed models (minimum 2.6MB with 90% off) with minor loss of accuracy.
 (99.17% -> 98.99% with 90% off and retraining) Again, this is not an optimal.
 
+## Issues
+
 Due to lack of supports on SparseTensor and its operations of TensorFlow (0.8.0),
-this implementation uses [*embedding_lookup_sparse*](https://www.tensorflow.org/versions/r0.8/api_docs/python/nn.html#embedding_lookup_sparse)
-rather than using sparse matmul that uses typical CSR format, such as cuSPARSE.
-Also, I think this implementation has following limitations.
+this implementation has some limitations. This work uses [*embedding_lookup_sparse*](https://www.tensorflow.org/versions/r0.8/api_docs/python/nn.html#embedding_lookup_sparse) to compute sparse matrix-vector multiplication.
+It is not solely for the purpose of sparse matrix vector multiplication, and thus its performance may be sub-optimal. (I'm not sure.)
+Also, TensorFlow uses <index, value> pair for sparse matrix rather than
+using typical CSR format which is more compact and performant.
+In summary, because of the following reasons, I think this implementation has some limitations.
 
 1. *embedding_lookup_sparse* doesn't support ```broadcasting```, which prohibits users to run test with normal test datasets.
 2. Performance may be somewhat sub-optimal.
-3. Because Sparse Variable is not supported, manual dense to sparse and sparse to dense transformation is required.
+3. Because "Sparse Variable" is not supported, manual dense to sparse and sparse to dense transformation is required.
 4. 4D Convolution Tensor may also be applicable, but bit tricky.
-5. *embedding_lookup_sparse* forces additional matrix transpose, dimension squeeze and dimension reshape.
+5. Current *embedding_lookup_sparse* forces additional matrix transpose, dimension squeeze and dimension reshape.
 
 ## File descriptions and usages
 
