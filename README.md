@@ -84,15 +84,15 @@ LLC size: 6 MB
 <img src=http://garion9013.github.io/images/cpu-desktop.png alt=http://garion9013.github.io/images/cpu-desktop.png>
 
 Baseline: 0.01118040085 s<br>
-10 % pruned: 0.005825249279 s<br>
-20 % pruned: 0.04808278927  s<br>
-30 % pruned: 0.05296058167  s<br>
-40 % pruned: 0.05639345492  s<br>
-50 % pruned: 0.06608673888  s<br>
-60 % pruned: 0.08565862006  s<br>
-70 % pruned: 0.09634974708  s<br>
-80 % pruned: 0.1079562668   s<br>
-90 % pruned: 0.1056580001   s<br>
+10 % pruned: 1.919299984   s<br>
+20 % pruned: 0.2325239658  s<br>
+30 % pruned: 0.2111079693  s<br>
+40 % pruned: 0.1982570648  s<br>
+50 % pruned: 0.1691776752  s<br>
+60 % pruned: 0.1305227757  s<br>
+70 % pruned: 0.116039753   s<br>
+80 % pruned: 0.103564167   s<br>
+90 % pruned: 0.1058168888  s<br>
 
 #### GPU performance (5 times averaged)
 GPU: Nvidia Geforce GTX650 @ 1.058 GHz,
@@ -101,12 +101,20 @@ LLC size: 256 KB
 <img src=http://garion9013.github.io/images/gpu-desktop.png alt=http://garion9013.github.io/images/gpu-desktop.png>
 
 Baseline: 0.1475181845 s<br>
-10 % pruned: 0.4992931957 s<br>
-20 % pruned: 0.5534564735 s<br>
-30 % pruned: 0.5705291375 s<br>
-40 % pruned: 0.7058111907 s<br>
-50 % pruned: 0.7393358328 s<br>
-60 % pruned: 0.8126856559 s<br>
-70 % pruned: 1.02670899   s<br>
-80 % pruned: 1.08733898   s<br>
-90 % pruned: 1.210453449  s<br>
+10 % pruned: 0.2954540253 s<br>
+20 % pruned: 0.2665398121 s<br>
+30 % pruned: 0.2585638046 s<br>
+40 % pruned: 0.2090051651 s<br>
+50 % pruned: 0.1995279789 s<br>
+60 % pruned: 0.1815193653 s<br>
+70 % pruned: 0.1436806202 s<br>
+80 % pruned: 0.135668993  s<br>
+90 % pruned: 0.1218701839 s<br>
+
+
+
+
+
+
+
+
