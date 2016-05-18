@@ -16,7 +16,7 @@ each case and got compressed models (minimum 2.6MB with 90% off) with minor loss
 Due to lack of supports on SparseTensor and its operations of TensorFlow (0.8.0),
 this implementation has some limitations. This work uses [*embedding_lookup_sparse*](https://www.tensorflow.org/versions/r0.8/api_docs/python/nn.html#embedding_lookup_sparse) to compute sparse matrix-vector multiplication.
 It is not solely for the purpose of sparse matrix vector multiplication, and thus its performance may be sub-optimal. (I'm not sure.)
-Also, TensorFlow uses <index, value> pair for sparse matrix rather than
+Also, TensorFlow uses \<index, value\> pair for sparse matrix rather than
 using typical CSR format which is more compact and performant.
 In summary, because of the following reasons, I think this implementation has some limitations.
 
