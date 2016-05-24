@@ -129,3 +129,8 @@ def log(fname, log):
    with open(fname, "a") as wobj:
         wobj.write(str(log)+"\n")
 
+# Input: Path to target image, Output: ndarray resized to fixed (28,28)
+def imread(path):
+    import numpy as np
+    import Image
+    return np.array(Image.open(path).resize((28,28), resample=2))

@@ -5,7 +5,6 @@ sys.dont_write_bytecode = True
 
 import tensorflow as tf
 import numpy as np
-from scipy.misc import imread, imresize
 import argparse
 import config
 import papl
@@ -30,7 +29,7 @@ sess = tf.InteractiveSession()
 # sess = tf.Session()
 
 def imgread(path):
-    tmp = imresize(imread(path), (28,28))
+    tmp = papl.imread(path)
     img = np.zeros((28,28,1))
     img[:,:,0]=tmp[:,:,0]
     return img
