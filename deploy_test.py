@@ -21,6 +21,7 @@ else:
     argparser.print_help()
     sys.exit()
 
+# sess = tf.InteractiveSession(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True)))
 sess = tf.InteractiveSession()
 # sess = tf.Session()
 
