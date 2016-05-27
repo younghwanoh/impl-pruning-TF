@@ -146,7 +146,7 @@ saver = tf.train.Saver()
 
 if args.first_round == True:
     # First round: Train original model
-    cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+    cross_entropy = -tf.reduce_sum(y_*tf.log(tf.clip_by_value(y_conv,1e-10,1.0)))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
@@ -187,7 +187,7 @@ if args.second_round == True:
     saver.save(sess, "./model_ckpt_dense_pruned", write_meta_graph=False) 
 
     # Retrain networks
-    cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+    cross_entropy = -tf.reduce_sum(y_*tf.log(tf.clip_by_value(y_conv,1e-10,1.0)))
     trainer = tf.train.AdamOptimizer(1e-4)
     grads_and_vars = trainer.compute_gradients(cross_entropy)
     grads_and_vars = apply_prune_on_grads(grads_and_vars, dict_nzidx)
