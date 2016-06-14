@@ -6,7 +6,6 @@ sys.dont_write_bytecode = True
 import tensorflow as tf
 import papl
 import argparse
-import epic as ep
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-m", "--model", required=True, help="Specify serialized input model")
