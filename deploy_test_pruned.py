@@ -9,6 +9,8 @@ import argparse
 import config
 import papl
 
+execfile('/home/yhlinux/.pythonrc')
+
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-t", "--test", action="store_true", help="Run test")
 argparser.add_argument("-d", "--deploy", action="store_true", help="Run deploy with seven.png")
@@ -26,7 +28,7 @@ else:
     sys.exit()
 
 # sess = tf.InteractiveSession(config=tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True)))
-sess = tf.InteractiveSession()
+sess = tf.InteractiveSession(config=tf.ConfigProto(device_count={'GPU':0}))
 # sess = tf.Session()
 
 def imgread(path):
@@ -41,12 +43,12 @@ sparse_w={
     "b_conv1": tf.Variable(tf.constant(0.1, shape=[32]), name="b_conv1"),
     "w_conv2": tf.Variable(tf.truncated_normal([5, 5, 32, 64], stddev=0.1), name="w_conv2"),
     "b_conv2": tf.Variable(tf.constant(0.1, shape=[64]), name="b_conv2"),
-    "w_fc1":      tf.Variable(tf.zeros([config.th["fc1"]],  dtype=tf.float32),name="w_fc1"),
-    "w_fc1_idx":  tf.Variable(tf.zeros([config.th["fc1"],2],dtype=tf.int32),  name="w_fc1_idx"),
+    "w_fc1":      tf.Variable(tf.zeros([config.th["fc1_nnz"]],  dtype=tf.float32),name="w_fc1"),
+    "w_fc1_idx":  tf.Variable(tf.zeros([config.th["fc1_nnz"],2],dtype=tf.int32),  name="w_fc1_idx"),
     "w_fc1_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc1_shape"),
     "b_fc1":      tf.Variable(tf.zeros([1024], dtype=tf.float32), name="b_fc1"),
-    "w_fc2":      tf.Variable(tf.zeros([config.th["fc2"]],  dtype=tf.float32),name="w_fc2"),
-    "w_fc2_idx":  tf.Variable(tf.zeros([config.th["fc2"],2],dtype=tf.int32),  name="w_fc2_idx"),
+    "w_fc2":      tf.Variable(tf.zeros([config.th["fc2_nnz"]],  dtype=tf.float32),name="w_fc2"),
+    "w_fc2_idx":  tf.Variable(tf.zeros([config.th["fc2_nnz"],2],dtype=tf.int32),  name="w_fc2_idx"),
     "w_fc2_shape":tf.Variable(tf.zeros([2],     dtype=tf.int32),  name="w_fc2_shape"),
     "b_fc2":      tf.Variable(tf.zeros([10], dtype=tf.float32), name="b_fc2"),
 }
