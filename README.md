@@ -39,7 +39,7 @@ and then run training with second (pruning and retraining) and third (generate s
 ./train.py -2 -3
 ```
 
-To inference single image (seven.png) and measuring its latency,
+To inference single image (seven.png) and measure its latency,
 
 ```bash
 ./deploy_test.py -d -m model_ckpt_dense
