@@ -9,8 +9,6 @@ import argparse
 import config
 import papl
 
-execfile('/home/yhlinux/.pythonrc')
-
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-t", "--test", action="store_true", help="Run test")
 argparser.add_argument("-d", "--deploy", action="store_true", help="Run deploy with seven.png")
