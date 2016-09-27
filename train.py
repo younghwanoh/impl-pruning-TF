@@ -31,9 +31,6 @@ if (args.first_round or args.second_round or args.third_round) == False:
     argparser.print_help()
     sys.exit()
 
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
-
 sess = tf.InteractiveSession()
 
 def apply_prune(weights):

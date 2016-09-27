@@ -32,6 +32,11 @@ model_ckpt_dense: original model<br>
 model_ckpt_dense_pruned: 90% pruned-only model<br>
 model_ckpt_sparse_retrained: 90% pruned and retrained model<br>
 
+#### Python package requirements
+```bash
+sudo apt-get install python-scipy python-numpy python-matplotlib
+```
+
 To regenerate these sparse model, edit ```config.py``` first as your threshold configuration,
 and then run training with second (pruning and retraining) and third (generate sparse form of weight data) round options.
 
