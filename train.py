@@ -157,7 +157,11 @@ if args.first_round == True:
             print("step %d, training accuracy %g"%(i, train_accuracy))
         train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
-    score = test(y_conv, message="First-round test accuracy")
+    # Test
+    score = accuracy.eval(feed_dict={x: mnist.test.images,
+                                      y_: mnist.test.labels,
+                                      keep_prob: 1.0})
+    print("First-round test accuracy %g" % score)
     
     # Save model objects to readable format
     papl.print_weight_vars(dense_w, papl.config.target_all_layer,
