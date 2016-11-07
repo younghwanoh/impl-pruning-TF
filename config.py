@@ -29,13 +29,14 @@ target_dat = _complex_concat(target_all_layer, [".dat"])
 target_p_dat = _complex_concat(target_all_layer, ["_p.dat"])
 target_tp_dat = _complex_concat(target_all_layer, ["_tp.dat"])
 
-data_all = target_dat + target_p_dat + target_tp_dat
+weight_all = target_dat + target_p_dat + target_tp_dat
+syn_all = ["in_conv1.syn", "in_conv2.syn", "in_fc1.syn", "in_fc2.syn"]
 
 # Data settings
 show_zero = False
 
 # Graph settings
 alpha = 0.75
-step = 0.003
+step = 1
 color = "green"
 pdf_prefix = ""

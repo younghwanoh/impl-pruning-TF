@@ -7,14 +7,16 @@ import tensorflow as tf
 import numpy as np
 import argparse
 import papl
+import config
 
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-t", "--test", action="store_true", help="Run test")
 argparser.add_argument("-d", "--deploy", action="store_true", help="Run deploy with seven.png")
+argparser.add_argument("-s", "--print_syn", action="store_true", help="Print synapses to .syn")
 argparser.add_argument("-m", "--model", default="./model_ckpt_dense", help="Specify a target model file")
 args = argparser.parse_args()
 
-if (args.test or args.deploy) == True:
+if (args.test or args.deploy or args.print_syn) == True:
     from tensorflow.examples.tutorials.mnist import input_data
     mnist = input_data.read_data_sets('/tmp/data/', one_hot=True)
 else:
@@ -59,20 +61,21 @@ def dense_cnn_model(weights):
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, weights["w_fc1"]) + weights["b_fc1"])
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
     y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, weights["w_fc2"]) + weights["b_fc2"])
-    return y_conv
+    synapses = [x_image, h_pool1, h_pool2_flat, h_fc1_drop]
+    return y_conv, synapses
 
 # Construct a dense model with variables
 if args.test == True:
     x = tf.placeholder("float", shape=[None, 784])
     x_image = tf.reshape(x, [-1,28,28,1])
-elif args.deploy == True:
+elif args.deploy == True or args.print_syn == True:
     img = imgread("./seven.png")
     x = tf.placeholder("float", shape=[None, 28, 28, 1])
     x_image = x
 y_ = tf.placeholder("float", shape=[None, 10])
 keep_prob = tf.placeholder("float")
 
-y_conv = dense_cnn_model(dense_w)
+y_conv, synapses = dense_cnn_model(dense_w)
 
 # Restore values of variables
 saver = tf.train.Saver(dense_w)
@@ -109,3 +112,10 @@ elif args.deploy == True:
     print "output: %s" % result
     print "time: %s s" % (a-b)
     papl.log("performance_ref.log", a-b)
+
+elif args.print_syn == True:
+    # Print synapses (Input data of each neuron)
+    for i,j in zip(synapses, config.syn_all):
+        syn = sess.run(i, feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0})
+        papl.print_weight_nps(syn, j)
+    print "Done! Synapse data is printed to x.syn"

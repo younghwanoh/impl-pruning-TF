@@ -46,25 +46,31 @@ def _maxRuler(array):
 # Start main methods (tools)
 # =====================================================================================
 
-# Input: x.dat from global variables (config) , Output: histogram. x.pdf
+# Input: x.dat from global variables (config) or arguments
+# Output: histogram. x.pdf
 # Histogram settings are configurable through config.py
-def draw_histogram():
-    file_list = config.data_all
+def draw_histogram(*target):
+    if len(target) == 1:
+        target = target[0]
+        assert type(target) == list
+        file_list = target
+    else:
+        file_list = config.weight_all
 
-    assert type(file_list) == list
     for target in file_list:
         print "Target: ", target
         try:
             with open(config.pdf_prefix+"%s" % target) as text:
                 x = np.float32(text.read().rstrip("\n").split("\n"))
 
-            norm = np.ones_like(x) / float(len(x))
+            # norm = np.ones_like(x) / float(len(x))
+            norm = np.ones_like(x) / 1
             binspace = np.arange(_minRuler(x), _maxRuler(x), config.step)
             n, bins, patches = plt.hist(x, bins=binspace, weights=norm,
                 alpha=config.alpha, facecolor=config.color)
 
-            formatter = FuncFormatter(_to_percent)
-            plt.gca().yaxis.set_major_formatter(formatter)
+            # formatter = FuncFormatter(_to_percent)
+            # plt.gca().yaxis.set_major_formatter(formatter)
             plt.grid(True)
 
             _saveToPdf(config.pdf_prefix+"%s.pdf" % target.split(".")[0])
@@ -87,6 +93,16 @@ def print_weight_vars(obj_dict, weight_obj_list, fname_list, show_zero=False):
                 flat_weight_space = flat_weight_space[flat_weight_space != 0]
             writeLine = csv.writer(filelog, delimiter='\n')
             writeLine.writerow(flat_weight_space)
+
+# Input: synapse, Output: human-readable form of model as x.syn
+def print_weight_nps(weight_arr, fname, show_zero=False):
+    ndim = weight_arr.size
+    flat_weight_space = weight_arr.reshape(ndim)
+    with open(fname, "w") as filelog:
+        if show_zero == False:
+            flat_weight_space = flat_weight_space[flat_weight_space != 0]
+        writeLine = csv.writer(filelog, delimiter='\n')
+        writeLine.writerow(flat_weight_space)
 
 # Input: sparse model object list, Output: human-readable form of model as x.dat
 def print_sparse_weight_vars(obj_dict, weight_obj_list, fname_list):
