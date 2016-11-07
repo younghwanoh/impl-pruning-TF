@@ -40,7 +40,7 @@ def read_model_obj(fname):
         assert os.path.isfile(fname)
         saver.restore(sess, fname)
         switcher = {
-            "model_ckpt": papl.config.target_dat,
+            "model_ckpt_dense": papl.config.target_dat,
             "model_ckpt_dense_pruned": papl.config.target_p_dat,
             "model_ckpt_dense_retrained": papl.config.target_tp_dat
         }

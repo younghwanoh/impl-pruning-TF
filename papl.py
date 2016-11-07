@@ -63,14 +63,14 @@ def draw_histogram(*target):
             with open(config.pdf_prefix+"%s" % target) as text:
                 x = np.float32(text.read().rstrip("\n").split("\n"))
 
-            # norm = np.ones_like(x) / float(len(x))
-            norm = np.ones_like(x) / 1
+            norm = np.ones_like(x) / float(len(x))
+            # norm = np.ones_like(x)
             binspace = np.arange(_minRuler(x), _maxRuler(x), config.step)
             n, bins, patches = plt.hist(x, bins=binspace, weights=norm,
                 alpha=config.alpha, facecolor=config.color)
 
-            # formatter = FuncFormatter(_to_percent)
-            # plt.gca().yaxis.set_major_formatter(formatter)
+            formatter = FuncFormatter(_to_percent)
+            plt.gca().yaxis.set_major_formatter(formatter)
             plt.grid(True)
 
             _saveToPdf(config.pdf_prefix+"%s.pdf" % target.split(".")[0])
