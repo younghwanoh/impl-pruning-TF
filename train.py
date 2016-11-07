@@ -117,9 +117,15 @@ def test(y_infer, message="None."):
     correct_prediction = tf.equal(tf.argmax(y_infer,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
-    result = accuracy.eval(feed_dict={x: mnist.test.images,
-                                      y_: mnist.test.labels,
-                                      keep_prob: 1.0})
+    # To avoid OOM, run validation with 500/10000 test dataset
+    result = 0
+    for i in range(20):
+        batch = mnist.test.next_batch(500)
+        result += accuracy.eval(feed_dict={x: batch[0],
+                                          y_: batch[1],
+                                          keep_prob: 1.0})
+    result /= 20
+
     print(message+" %g\n" % result)
     return result
 
@@ -142,7 +148,7 @@ y_conv = dense_cnn_model(dense_w)
 saver = tf.train.Saver()
 
 if args.first_round == True:
-    # First round: Train original model
+    # First round: Train baseline dense model
     cross_entropy = -tf.reduce_sum(y_*tf.log(tf.clip_by_value(y_conv,1e-10,1.0)))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
@@ -158,10 +164,8 @@ if args.first_round == True:
         train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     # Test
-    score = accuracy.eval(feed_dict={x: mnist.test.images,
-                                      y_: mnist.test.labels,
-                                      keep_prob: 1.0})
-    print("First-round test accuracy %g" % score)
+    score = test(y_conv, message="First-round prune-only test accuracy")
+    papl.log("baseline_accuracy.log", score)
     
     # Save model objects to readable format
     papl.print_weight_vars(dense_w, papl.config.target_all_layer,

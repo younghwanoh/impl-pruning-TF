@@ -84,17 +84,28 @@ if args.test == True:
     import time
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+
+    # To avoid OOM, run validation with 500/10000 test dataset
     b = time.time()
-    result = sess.run(accuracy, feed_dict={x:mnist.test.images, y_:mnist.test.labels, keep_prob: 1.0})
+    result = 0
+    for i in range(20):
+        batch = mnist.test.next_batch(500)
+        result += accuracy.eval(feed_dict={x: batch[0],
+                                          y_: batch[1],
+                                          keep_prob: 1.0})
+    result /= 20
     a = time.time()
+
     print("test accuracy %g" % result)
     print "time: %s s" % (a-b)
 elif args.deploy == True:
-    # Infer a single image
+    # Infer a single image & check its latency
     import time
+
     b = time.time()
     result = sess.run(tf.argmax(y_conv,1), feed_dict={x:[img], y_:mnist.test.labels, keep_prob: 1.0})
     a = time.time()
+
     print "output: %s" % result
     print "time: %s s" % (a-b)
     papl.log("performance_ref.log", a-b)
