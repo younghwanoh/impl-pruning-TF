@@ -104,12 +104,16 @@ def dense_cnn_model(weights):
 
     x_image = tf.reshape(x, [-1,28,28,1])
     h_conv1 = tf.nn.relu(conv2d(x_image, weights["w_conv1"]) + weights["b_conv1"])
+    tf.add_to_collection("in_conv1", x_image)
     h_pool1 = max_pool_2x2(h_conv1)
+    tf.add_to_collection("in_conv2", h_pool1)
     h_conv2 = tf.nn.relu(conv2d(h_pool1, weights["w_conv2"]) + weights["b_conv2"])
     h_pool2 = max_pool_2x2(h_conv2)
     h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+    tf.add_to_collection("in_fc1", h_pool2_flat)
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, weights["w_fc1"]) + weights["b_fc1"])
     h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+    tf.add_to_collection("in_fc2", h_fc1_drop)
     y_conv=tf.nn.softmax(tf.matmul(h_fc1_drop, weights["w_fc2"]) + weights["b_fc2"])
     return y_conv
 
@@ -139,11 +143,12 @@ def check_file_exists(key):
     return key + ("-"+str(count) if count>0 else "")
 
 # Construct a dense model
-x = tf.placeholder("float", shape=[None, 784])
-y_ = tf.placeholder("float", shape=[None, 10])
-keep_prob = tf.placeholder("float")
+x = tf.placeholder("float", shape=[None, 784], name="x")
+y_ = tf.placeholder("float", shape=[None, 10], name="y_")
+keep_prob = tf.placeholder("float", name="keep_prob")
 
 y_conv = dense_cnn_model(dense_w)
+tf.add_to_collection("y_conv", y_conv)
 
 saver = tf.train.Saver()
 
@@ -153,6 +158,8 @@ if args.first_round == True:
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    tf.add_to_collection("accuracy", accuracy)
+
     sess.run(tf.initialize_all_variables())
 
     for i in range(20000):
@@ -171,7 +178,7 @@ if args.first_round == True:
     papl.print_weight_vars(dense_w, papl.config.target_all_layer,
                            papl.config.target_dat, show_zero=papl.config.show_zero)
     # Save model objects to serialized format
-    saver.save(sess, "./model_ckpt_dense", write_meta_graph=False)
+    saver.save(sess, "./model_ckpt_dense")
 
 if args.second_round == True:
     # Second round: Retrain pruned model, start with default model: model_ckpt_dense
@@ -189,7 +196,7 @@ if args.second_round == True:
     papl.log("prune_accuracy.log", score)
 
     # save model objects to serialized format
-    saver.save(sess, "./model_ckpt_dense_pruned", write_meta_graph=False) 
+    saver.save(sess, "./model_ckpt_dense_pruned")
 
     # Retrain networks
     cross_entropy = -tf.reduce_sum(y_*tf.log(tf.clip_by_value(y_conv,1e-10,1.0)))
@@ -217,8 +224,8 @@ if args.second_round == True:
 
     # Save retrained variables to a desne form
     # key = check_file_exists("model_ckpt_dense_retrained")
-    # saver.save(sess, key, write_meta_graph=False)
-    saver.save(sess, "model_ckpt_dense_retrained", write_meta_graph=False)
+    # saver.save(sess, key)
+    saver.save(sess, "model_ckpt_dense_retrained")
 
     # Test the retrained model
     score = test(y_conv, message="Second-round final test accuracy")
@@ -227,7 +234,7 @@ if args.second_round == True:
 if args.third_round == True:
     # Third round: Transform iteratively pruned model to a sparse format and save it
     if args.second_round == False:
-        saver.restore(sess, args.checkpoint)
+        saver.restore(sess, "./model_ckpt_dense_pruned")
 
     # Transform final weights to a sparse form
     sparse_w = gen_sparse_dict(dense_w)
@@ -242,4 +249,4 @@ if args.third_round == True:
                            papl.config.target_tp_dat, show_zero=papl.config.show_zero)
     # Save model objects to serialized format
     final_saver = tf.train.Saver(sparse_w)
-    final_saver.save(sess, "./model_ckpt_sparse_retrained", write_meta_graph=False) 
+    final_saver.save(sess, "./model_ckpt_sparse_retrained") 

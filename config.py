@@ -20,7 +20,7 @@ th = ths.th90
 
 # CNN settings for pruned training
 target_layer = ["fc1", "fc2"]
-retrain_iterations = 4400
+retrain_iterations = 10
 
 # Output data lists: do not change this
 target_all_layer = _add_prefix(target_layer)
