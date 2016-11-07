@@ -37,6 +37,5 @@ show_zero = False
 
 # Graph settings
 alpha = 0.75
-step = 1
 color = "green"
 pdf_prefix = ""

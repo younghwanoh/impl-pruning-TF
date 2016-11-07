@@ -33,14 +33,14 @@ def _to_percent(y, position):
 def _minRuler(array):
     minimum = min(array)
     print " - min: ", minimum
-    offset = minimum % config.step
+    offset = minimum % step
     return minimum - offset
 
 def _maxRuler(array):
     maximum = max(array)
     print " - max: ", maximum
-    offset = maximum % config.step
-    return maximum - offset + config.step
+    offset = maximum % step
+    return maximum - offset + step
 
 # =====================================================================================
 # Start main methods (tools)
@@ -49,13 +49,15 @@ def _maxRuler(array):
 # Input: x.dat from global variables (config) or arguments
 # Output: histogram. x.pdf
 # Histogram settings are configurable through config.py
-def draw_histogram(*target):
+def draw_histogram(*target, **kwargs):
     if len(target) == 1:
         target = target[0]
         assert type(target) == list
         file_list = target
     else:
         file_list = config.weight_all
+    global step
+    step = kwargs["step"]
 
     for target in file_list:
         print "Target: ", target
@@ -63,14 +65,14 @@ def draw_histogram(*target):
             with open(config.pdf_prefix+"%s" % target) as text:
                 x = np.float32(text.read().rstrip("\n").split("\n"))
 
-            norm = np.ones_like(x) / float(len(x))
-            # norm = np.ones_like(x)
-            binspace = np.arange(_minRuler(x), _maxRuler(x), config.step)
+            # norm = np.ones_like(x) / float(len(x))
+            norm = np.ones_like(x)
+            binspace = np.arange(_minRuler(x), _maxRuler(x), step)
             n, bins, patches = plt.hist(x, bins=binspace, weights=norm,
                 alpha=config.alpha, facecolor=config.color)
 
-            formatter = FuncFormatter(_to_percent)
-            plt.gca().yaxis.set_major_formatter(formatter)
+            # formatter = FuncFormatter(_to_percent)
+            # plt.gca().yaxis.set_major_formatter(formatter)
             plt.grid(True)
 
             _saveToPdf(config.pdf_prefix+"%s.pdf" % target.split(".")[0])
