@@ -97,14 +97,14 @@ def print_weight_vars(obj_dict, weight_obj_list, fname_list, show_zero=False):
             writeLine.writerow(flat_weight_space)
 
 # Input: synapse, Output: human-readable form of model as x.syn
-def print_weight_nps(weight_arr, fname, show_zero=False):
-    ndim = weight_arr.size
-    flat_weight_space = weight_arr.reshape(ndim)
+def print_synapse_nps(syn_arr, fname, show_zero=False):
+    ndim = syn_arr.size
+    flat_syn_space = syn_arr.reshape(ndim)
     with open(fname, "w") as filelog:
         if show_zero == False:
-            flat_weight_space = flat_weight_space[flat_weight_space != 0]
+            flat_syn_space = flat_syn_space[flat_syn_space != 0]
         writeLine = csv.writer(filelog, delimiter='\n')
-        writeLine.writerow(flat_weight_space)
+        writeLine.writerow(flat_syn_space)
 
 # Input: sparse model object list, Output: human-readable form of model as x.dat
 def print_sparse_weight_vars(obj_dict, weight_obj_list, fname_list):

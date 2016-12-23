@@ -82,5 +82,5 @@ elif args.print_syn == True:
         syn = sess.run(i, feed_dict={"x:0":[img],
                                      "y_:0":mnist.test.labels,
                                      "keep_prob:0": 1.0})
-        papl.print_weight_nps(syn, j)
+        papl.print_synapse_nps(syn, j)
     print "Done! Synapse data is printed to x.syn"
