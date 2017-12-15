@@ -1,5 +1,13 @@
 ## TensorFlow implementation of "Iterative Pruning"
 
+**CAUTION**: Out-of-date notices.
+
+Currently, I've checked TF (>1.3) supports *sparse_matmul* and it seems that this is
+more correct way to implement iterative pruning. This work is just naively done with quite old
+versions (0.8.0) and thus, I do not recommend to consider these codes for your serious cases. And there will be no updates or maintenance either.
+
+---
+
 This work is based on "Learning both Weights and Connections for Efficient
 Neural Network." [Song et al.](http://arxiv.org/pdf/1506.02626v3.pdf) @ NIPS '15.
 Note that these works are just for quantifying its effectiveness on latency (within TensorFlow),
