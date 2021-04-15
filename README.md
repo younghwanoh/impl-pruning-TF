@@ -94,7 +94,7 @@ Baseline: 12.49 MB<br>
 CPU: Intel Core i5-2500 @ 3.3 GHz,
 LLC size: 6 MB
 
-<img src=http://garion9013.github.io/images/cpu-desktop.png alt=http://garion9013.github.io/images/cpu-desktop.png>
+<img src=http://younghwanoh.github.io/images/cpu-desktop.png alt=http://younghwanoh.github.io/images/cpu-desktop.png>
 
 Baseline: 0.01118040085 s<br>
 10 % pruned: 1.919299984   s<br>
@@ -111,7 +111,7 @@ Baseline: 0.01118040085 s<br>
 GPU: Nvidia Geforce GTX650 @ 1.058 GHz,
 LLC size: 256 KB
 
-<img src=http://garion9013.github.io/images/gpu-desktop.png alt=http://garion9013.github.io/images/gpu-desktop.png>
+<img src=http://younghwanoh.github.io/images/gpu-desktop.png alt=http://younghwanoh.github.io/images/gpu-desktop.png>
 
 Baseline: 0.1475181845 s<br>
 10 % pruned: 0.2954540253 s<br>
